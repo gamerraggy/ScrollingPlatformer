@@ -1,0 +1,104 @@
+import pygame
+
+pygame.init()
+screen = pygame.display.set_mode((800, 600))
+pygame.display.set_caption('Sigma game I made :moai:')
+clock = pygame.time.Clock()
+running = True
+
+GREEN = (0, 189, 50)
+BROWN = (74, 40, 24)
+#globals
+player = [100, 450, 0, 0] #xpos, ypos, xvel, yvel
+isOnGround = False
+offset = 0
+
+
+
+def move_player():
+    global isOnGround #needed to modify a global variable from within a function
+    global offset
+    #left movement!----------------
+    if keys[pygame.K_a]:
+        if offset > 260 and player[0]>0: #check if youve reached the left edge of the map
+            player[2] = -5 # let player get back to the center of the game screen
+            
+        elif player[0]>400 and offset < -1500: #checks if were on far right edge
+            player[2] = -5 #lets player go back to center
+            
+        elif player[0]>0: #if player is recentered, move the offset not the player
+            offset += 5
+            player[2] = 0
+            
+        else:
+            player[2] = 0 #make sure motion is off
+        
+    #right movment--------------------
+    elif keys[pygame.K_d]:
+        #player[2] = 10 #update velocity
+        offset -= 5
+    
+    #if no input--no move---------------
+    else:
+        player[2] = 0
+    
+    #keep up/down SEPERATE from left/right movement
+    if isOnGround == True and keys[pygame.K_SPACE]:
+        #print("w pressed yo", end = " ")
+        player[3] = -20 #player jumps
+        isOnGround = False
+        
+    if isOnGround == False:
+        player[3] += 1#gravity
+        
+    #print(player[1], isOnGround) #added for testing
+    
+    #checks if your feet are below the ground
+    if player[1] > 450:
+        isOnGround = True
+        player[1] = 450
+        
+    #keep the update section last in your physics section
+    player[0]+=player[2] #add x velocity to x position
+    player[1]+=player[3] #add y velocity to y position
+
+def draw_clouds():
+    for x in range(100, 3000, 300): #x = starting point, y = how far they spawn, z = how much apart
+        for i in range(3): #draws 3 circles
+            pygame.draw.circle(screen, (255, 255, 255), (x + offset, 100), 40)
+            pygame.draw.circle(screen, (255, 255, 255), (x-50 + offset, 125), 40)
+            pygame.draw.circle(screen, (255, 255, 255), (x+50 + offset, 125), 40)
+        pygame.draw.rect(screen, (255, 255, 255), (x-50 + offset, 100, 100, 65))
+        
+def draw_tree():
+    for x in range(100, 3000, 300):
+        for i in range(3): 
+            pygame.draw.rect(screen, (BROWN), (x-15 + offset, 250, 25, 250))
+            pygame.draw.circle(screen, ((GREEN)), (x + offset, 260), 40)
+            pygame.draw.circle(screen, ((GREEN)), (x-40 + offset, 300), 40)
+            pygame.draw.circle(screen, ((GREEN)), (x+40 + offset, 300), 40)
+        
+
+while running: #Main game loop--------------------------------------------------
+    #input section--------------------------------------------------------------
+    clock.tick(60)
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+            
+        keys = pygame.key.get_pressed()
+        
+        #physics section----------------------------------------------------
+    move_player()
+        
+        
+        
+        #render section-----------------------------------------------------
+    screen.fill((135, 206, 235)) #sky blue background
+    draw_clouds() #function call
+    pygame.draw.rect(screen, (GREEN), (0, 500, 800, 100)) #green grass
+    draw_tree() #function call
+    pygame.draw.rect(screen, (138, 10, 10), (player[0], player [1], 50, 50)) #player
+    pygame.display.flip()
+            
+pygame.quit()
