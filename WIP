@@ -1,19 +1,16 @@
 import pygame
-
 pygame.init()
 screen = pygame.display.set_mode((800, 600))
 pygame.display.set_caption('Sigma game I made :moai:')
 clock = pygame.time.Clock()
 running = True
-
+isOnGround = False
 GREEN = (0, 189, 50)
 BROWN = (74, 40, 24)
 #globals
 player = [100, 430, 0, 0] #xpos, ypos, xvel, yvel
 platforms = [(500, 400), (700, 300), (900, 200), (1100, 100), (1300, 200), (1500, 300), (1700, 400)]
-isOnGround = False
 offset = 0
-
 
 
 def move_player():
